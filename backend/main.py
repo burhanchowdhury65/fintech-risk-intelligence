@@ -1,8 +1,25 @@
 from typing import Optional
+
+import asyncio
+import os
+import uuid
+
+import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import uuid
-import asyncio
+
+
+ML_NODE_URL = os.getenv(
+    "ML_NODE_URL",
+    "http://127.0.0.1:8001"
+)
+
+ML_NODE_TIMEOUT = float(
+    os.getenv(
+        "ML_NODE_TIMEOUT",
+        "2.0"
+    )
+)
 
 
 app = FastAPI(
@@ -22,32 +39,6 @@ class AnalyzeRequest(BaseModel):
     simulate_unavailable: bool = False
 
 
-@app.get("/")
-def root():
-    return {
-        "message": "Fintech Risk Intelligence API is running"
-    }
-
-
-async def call_ml_node(
-    simulate_timeout: bool = False,
-    simulate_unavailable: bool = False
-):
-    if simulate_unavailable:
-        raise ConnectionError("ML/Risk node unavailable")
-
-    if simulate_timeout:
-        await asyncio.sleep(5)
-
-    return {
-        "is_fraud": False,
-        "risk_score": 0.0,
-        "risk_status": "low",
-        "model_factors": [],
-        "model_version": "baseline-v1"
-    }
-
-
 class AnalyzeResponse(BaseModel):
     request_id: str
     is_fraud: bool
@@ -57,7 +48,69 @@ class AnalyzeResponse(BaseModel):
     model_version: str
 
 
-@app.post("/analyze", response_model=AnalyzeResponse)
+@app.get("/")
+def root():
+    return {
+        "message": "Fintech Risk Intelligence API is running"
+    }
+
+
+async def call_ml_node(
+    request: AnalyzeRequest
+):
+    payload = {
+        "transaction_amount": request.transaction_amount,
+        "transaction_type": request.transaction_type,
+        "merchant_category": request.merchant_category,
+        "transaction_time": request.transaction_time,
+        "distance_from_home": request.distance_from_home,
+        "location": request.location,
+    }
+
+    if request.simulate_unavailable:
+        raise ConnectionError("ML/Risk node unavailable")
+
+    if request.simulate_timeout:
+        await asyncio.sleep(ML_NODE_TIMEOUT + 3)
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{ML_NODE_URL}/predict",
+                json=payload,
+                timeout=ML_NODE_TIMEOUT
+            )
+
+        response.raise_for_status()
+
+        return response.json()
+
+    except httpx.TimeoutException as exc:
+        raise asyncio.TimeoutError from exc
+
+    except (
+        httpx.ConnectError,
+        httpx.ConnectTimeout,
+        httpx.NetworkError
+    ) as exc:
+        raise ConnectionError(
+            "ML/Risk node unavailable"
+        ) from exc
+
+
+async def run_risk_analysis(
+    request: AnalyzeRequest,
+    request_id: str
+):
+    result = await call_ml_node(request)
+
+    return result
+
+
+@app.post(
+    "/analyze",
+    response_model=AnalyzeResponse
+)
 async def analyze(request: AnalyzeRequest):
 
     if (
@@ -76,11 +129,11 @@ async def analyze(request: AnalyzeRequest):
 
     try:
         result = await asyncio.wait_for(
-            call_ml_node(
-                request.simulate_timeout,
-                request.simulate_unavailable
+            run_risk_analysis(
+                request,
+                request_id
             ),
-            timeout=2.0
+            timeout=ML_NODE_TIMEOUT
         )
 
     except asyncio.TimeoutError:
@@ -88,7 +141,10 @@ async def analyze(request: AnalyzeRequest):
             status_code=504,
             detail={
                 "error_code": "ML_NODE_TIMEOUT",
-                "message": "ML/Risk node did not respond within the timeout limit",
+                "message": (
+                    "ML/Risk node did not respond "
+                    "within the timeout limit"
+                ),
                 "request_id": request_id
             }
         )
@@ -98,7 +154,9 @@ async def analyze(request: AnalyzeRequest):
             status_code=503,
             detail={
                 "error_code": "ML_NODE_UNAVAILABLE",
-                "message": "ML/Risk node is currently unavailable",
+                "message": (
+                    "ML/Risk node is currently unavailable"
+                ),
                 "request_id": request_id
             }
         )

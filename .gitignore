@@ -2,3 +2,9 @@
 __pycache__/
 *.pyc
 .DS_Store
+# Environment files
+.env
+
+# Runtime database
+data/
+*.db
