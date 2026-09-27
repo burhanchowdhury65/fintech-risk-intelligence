@@ -45,7 +45,7 @@ Expected Response:
   "service": "fintech-risk-intelligence-api"
 }
 
-Status: PENDING — manual test not yet executed in Day 3 audit.
+Status: PASS — manually verified with GET /health.
 
 # 3. Valid Transaction Analysis
 ## TC-003 — Valid Transaction
@@ -309,13 +309,24 @@ Purpose:
 Verify behavior when transaction fields contain invalid
 data types.
 
-Status: PENDING.
+Test:
+
+transaction_amount = "invalid"
+
+Expected Status: 422
+
+Expected Result:
+
+FastAPI/Pydantic rejects the invalid field type before the
+request reaches the ML/Risk Node.
+
+Status: PASS — manually verified.
 
 Note:
 
-Final validation behavior must be aligned with the verified
-Backend and Fraud/Risk Node schemas.
-
+Final validation behavior for the complete real ML/Risk Node
+contract remains pending until the verified Fraud/Risk Node
+schema is available.
 # 16. Unsupported Merchant Category
 ## TC-016 — Unsupported Merchant Category
 
