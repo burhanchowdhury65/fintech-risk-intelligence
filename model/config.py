@@ -17,12 +17,12 @@ NODE_PORT = int(os.environ.get("FRAUD_NODE_PORT", "8001"))
 
 # ---- Paths ----
 # Adjust DATA_DIR to wherever fraudTrain.csv / fraudTest.csv actually live on your machine.
-DATA_DIR = Path("data")
+DATA_DIR = Path(__file__).resolve().parent / "data"
 TRAIN_CSV = DATA_DIR / "fraudTrain.csv"
 TEST_CSV = DATA_DIR / "fraudTest.csv"
 
-ARTIFACTS_DIR = Path("artifacts")
-REPORTS_DIR = Path("reports")
+ARTIFACTS_DIR = Path(__file__).resolve().parent / "artifacts"
+REPORTS_DIR = Path(__file__).resolve().parent / "reports"
 
 MODEL_PATH = ARTIFACTS_DIR / "fraud_model_pipeline.joblib"
 

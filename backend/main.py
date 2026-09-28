@@ -8,6 +8,11 @@ import httpx
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+from backend.tools import (
+    dispatch_tool,
+    retry_async,
+)
+
 
 ML_NODE_URL = os.getenv(
     "ML_NODE_URL",
@@ -74,16 +79,21 @@ async def call_ml_node(
         await asyncio.sleep(ML_NODE_TIMEOUT + 3)
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{ML_NODE_URL}/predict",
-                json=payload,
-                timeout=ML_NODE_TIMEOUT
-            )
+        async def make_request():
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{ML_NODE_URL}/predict",
+                    json=payload,
+                    timeout=ML_NODE_TIMEOUT,
+                )
 
-        response.raise_for_status()
+            response.raise_for_status()
 
-        return response.json()
+            return response.json()
+
+        return await retry_async(
+            make_request,
+        )
 
     except httpx.TimeoutException as exc:
         raise asyncio.TimeoutError from exc
@@ -107,11 +117,16 @@ async def run_risk_analysis(
     return result
 
 
-@app.post(
-    "/analyze",
-    response_model=AnalyzeResponse
-)
-async def analyze(request: AnalyzeRequest):
+async def analyze_transaction_tool(
+    request: AnalyzeRequest,
+):
+    """
+    Allow-listed tool handler for transaction risk analysis.
+
+    The existing /analyze validation, timeout handling,
+    ML-node communication, and structured result mapping
+    remain inside this handler.
+    """
 
     if (
         request.transaction_amount is not None
@@ -171,9 +186,39 @@ async def analyze(request: AnalyzeRequest):
     )
 
 
-@app.get("/health")
-def health_check():
+async def health_status_tool():
+    """
+    Allow-listed health/status tool handler.
+    """
     return {
         "status": "ok",
         "service": "fintech-risk-intelligence-api"
     }
+
+
+@app.post(
+    "/analyze",
+    response_model=AnalyzeResponse
+)
+async def analyze(request: AnalyzeRequest):
+
+    return await dispatch_tool(
+        "analyze_transaction",
+        {
+            "analyze_transaction": analyze_transaction_tool,
+            "health/status": health_status_tool,
+        },
+        request=request,
+    )
+
+
+@app.get("/health")
+async def health_check():
+
+    return await dispatch_tool(
+        "health/status",
+        {
+            "analyze_transaction": analyze_transaction_tool,
+            "health/status": health_status_tool,
+        },
+    )
