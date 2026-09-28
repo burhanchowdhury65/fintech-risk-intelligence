@@ -82,13 +82,46 @@ Used to verify that the backend API is running.
   "message": "Fintech Risk Intelligence API is running"
 }
 ---
-
 # 7. Risk Score and Risk Status
 
 ## Risk Score
 
 The `risk_score` is a numeric value from `0` to `100`.
 
+It represents the transaction's relative risk level.
+
+It must NOT be described as:
+
+- a probability
+- a percentage
+- a probability of fraud
+
+The frontend must display the score in this format:
+
+```text
+72 / 100
+Risk Status Mapping
+
+The current implementation maps the 0–100 risk score to a provisional
+risk status as follows:
+
+Risk Score	Risk Status
+0–39	low
+40–69	medium
+70–100	high
+
+These risk-status boundaries are provisional and are not validated
+business thresholds.
+
+The fraud decision (is_fraud) is a separate classification decision
+based on the model's configured decision threshold. Therefore,
+risk_status and is_fraud must not be treated as identical fields.
+
+The current implementation uses a decision threshold of 0.80 on the
+model's raw score for the is_fraud decision.
+
+The risk score itself is a relative 0–100 display score and is not a
+calibrated probability.
 It represents the transaction's risk level.
 
 It must NOT be described as:
