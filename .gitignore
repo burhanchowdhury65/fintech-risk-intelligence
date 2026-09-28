@@ -8,3 +8,7 @@ __pycache__/
 # Runtime database
 data/
 *.db
+
+# ML node virtual environment
+model/.venv-node/
+model/__pycache__/

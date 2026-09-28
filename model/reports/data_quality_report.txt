@@ -1,0 +1,4 @@
+{'name': 'fraudTrain.csv', 'rows': 1296675, 'cols': 22, 'missing_total': 0, 'missing_by_col': {}, 'exact_duplicate_rows': 0, 'duplicate_trans_num': 0, 'target_counts': {0: 1289169, 1: 7506}, 'target_pct': {0: 99.4211, 1: 0.5789}, 'target_unique_values': [0, 1], 'amt_min': 1.0, 'amt_max': 28948.9, 'amt_invalid_le_zero': 0, 'date_min': '2019-01-01 00:00:18', 'date_max': '2020-06-21 12:13:37', 'memory_mb': np.float64(1074.89)}
+
+{'name': 'fraudTest.csv', 'rows': 555719, 'cols': 22, 'missing_total': 0, 'missing_by_col': {}, 'exact_duplicate_rows': 0, 'duplicate_trans_num': 0, 'target_counts': {0: 553574, 1: 2145}, 'target_pct': {0: 99.614, 1: 0.386}, 'target_unique_values': [0, 1], 'amt_min': 1.0, 'amt_max': 22768.11, 'amt_invalid_le_zero': 0, 'date_min': '2020-06-21 12:14:25', 'date_max': '2020-12-31 23:59:34', 'memory_mb': np.float64(460.68)}
+

@@ -1,0 +1,35 @@
+{
+  "model_version": "histgb-candidate-day3-v1",
+  "model_family": "HistGradientBoostingClassifier",
+  "config": {
+    "max_iter": 300,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "feature_order": [
+    "amt",
+    "distance_from_home_km",
+    "trans_hour",
+    "age_years",
+    "city_pop",
+    "category",
+    "gender"
+  ],
+  "decision_threshold": 0.8,
+  "threshold_selection_method": "validation-only sweep, targeting ~95% recall",
+  "split_method": "chronological, 85/15 of fraudTrain.csv, cutoff 2020-04-03 17:54:44",
+  "validation_metrics_at_threshold": {
+    "threshold": 0.8,
+    "precision": 0.5085308056872038,
+    "recall": 0.9470432480141218,
+    "f1": 0.6617329633055813,
+    "tn": 192332,
+    "fp": 1037,
+    "fn": 60,
+    "tp": 1073
+  },
+  "validation_pr_auc": 0.9178798799074239,
+  "train_pr_auc": 0.9432928796135313,
+  "fit_time_sec": 16.2,
+  "not_yet_test_evaluated": true
+}

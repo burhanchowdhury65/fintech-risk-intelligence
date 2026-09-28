@@ -1,0 +1,5 @@
+Validation metrics: {'label': 'VALIDATION (threshold selection)', 'threshold': 0.46293535308244615, 'precision': 0.3000275254610515, 'recall': 0.9620476610767873, 'f1': 0.45740663029794376, 'pr_auc': 0.8809360710340934, 'roc_auc': 0.9966408972629637, 'confusion_matrix': [[190826, 2543], [43, 1090]], 'support_fraud': 1133, 'support_total': 194502}
+
+Test metrics: {'label': 'FINAL TEST (held out)', 'threshold': 0.46293535308244615, 'precision': 0.2207918649935093, 'recall': 0.9515151515151515, 'f1': 0.35841601545350776, 'pr_auc': 0.8353783696654347, 'roc_auc': 0.9945476187402289, 'confusion_matrix': [[546371, 7203], [104, 2041]], 'support_fraud': 2145, 'support_total': 555719}
+
+Threshold: 0.46293535308244615
