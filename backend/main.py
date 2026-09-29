@@ -5,8 +5,10 @@ import os
 import uuid
 
 import httpx
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import Depends, FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+from backend.auth import security, verify_access_token
 
 from backend.tools import (
     dispatch_tool,
@@ -47,7 +49,7 @@ class AnalyzeRequest(BaseModel):
 class AnalyzeResponse(BaseModel):
     request_id: str
     is_fraud: bool
-    risk_score: float
+    risk_score: float = Field(..., ge=0, le=100)
     risk_status: str
     model_factors: list
     model_version: str
@@ -176,14 +178,14 @@ async def analyze_transaction_tool(
             }
         )
 
-    return AnalyzeResponse(
-        request_id=request_id,
-        is_fraud=result["is_fraud"],
-        risk_score=result["risk_score"],
-        risk_status=result["risk_status"],
-        model_factors=result["model_factors"],
-        model_version=result["model_version"]
-    )
+    return {
+        "request_id": request_id,
+        "is_fraud": result["is_fraud"],
+        "risk_score": result["risk_score"],
+        "risk_status": result["risk_status"],
+        "model_factors": result["model_factors"],
+        "model_version": result["model_version"],
+    }
 
 
 async def health_status_tool():
@@ -200,7 +202,13 @@ async def health_status_tool():
     "/analyze",
     response_model=AnalyzeResponse
 )
-async def analyze(request: AnalyzeRequest):
+async def analyze(
+    request: AnalyzeRequest,
+    user: str = Depends(
+        lambda credentials=Depends(security):
+        verify_access_token(credentials)
+    ),
+):
 
     return await dispatch_tool(
         "analyze_transaction",

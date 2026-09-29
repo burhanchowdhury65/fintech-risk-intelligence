@@ -34,7 +34,7 @@ def call_primary_llm(prompt: str) -> Any:
     client = get_groq_client()
 
     return client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+       model="openai/gpt-oss-20b",
         messages=[
             {"role": "user", "content": prompt}
         ],
