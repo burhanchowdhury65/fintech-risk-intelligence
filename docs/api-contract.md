@@ -308,3 +308,42 @@ The following remain intentionally provisional:
 - source_mode
 
 These items will be verified during the appropriate ML/integration phase.
+
+
+# 20. Counterfactual Response
+
+The `/analyze` response may include an optional `counterfactual` object when a counterfactual explanation is available.
+
+The counterfactual object describes one suggested feature change and the resulting risk assessment.
+
+## Counterfactual Schema
+
+```json
+{
+  "counterfactual": {
+    "found": true,
+    "changed_feature": "transaction_amount",
+    "changed_feature_label": "Transaction Amount",
+    "original_value": 1250.50,
+    "suggested_value": 850.00,
+    "new_risk_score": 32.0,
+    "new_risk_status": "low",
+    "reason": "Lowering the transaction amount reduces the predicted risk."
+  }
+}
+```
+
+### Fields
+
+| Field | Description |
+|---|---|
+| `found` | Indicates whether a counterfactual suggestion is available. |
+| `changed_feature` | Machine-readable name of the changed feature. |
+| `changed_feature_label` | User-friendly name of the changed feature. |
+| `original_value` | Original value of the selected feature. |
+| `suggested_value` | Suggested alternative value. |
+| `new_risk_score` | Risk score after applying the suggested change. |
+| `new_risk_status` | Risk status after applying the suggested change. |
+| `reason` | Human-readable explanation of the suggested change. |
+
+The counterfactual object is additive to the existing `/analyze` response and must not remove or rename existing response fields.

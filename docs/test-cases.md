@@ -468,3 +468,57 @@ simulate_unavailable
 
 are internal development/testing mechanisms and are not
 considered normal user-facing transaction fields.
+# 14. Day 5 Verification
+
+## TC-014 — Day 5 Normal Backend → Fraud Node → Result
+
+Flow:
+
+Orchestrator / Backend → Fraud Node → Result
+
+Expected Status: 200 OK
+
+Verified Result:
+
+is_fraud: false
+risk_score: 0.0
+risk_status: low
+model_version: histgb-candidate-day3-v1
+
+Status: PASS — manually verified on Day 5.
+
+## TC-015 — Day 5 ML Node Unavailable
+
+Expected Status: 503
+
+Expected Error Code:
+
+ML_NODE_UNAVAILABLE
+
+Status: PASS — manually verified on Day 5.
+
+## TC-016 — Day 5 ML Node Timeout
+
+Expected Status: 504
+
+Expected Error Code:
+
+ML_NODE_TIMEOUT
+
+Status: PASS — manually verified on Day 5.
+
+## TC-017 — Day 5 Validation Error
+
+Expected Status: 400
+
+Expected Error Code:
+
+INVALID_INPUT
+
+Status: PASS — manually verified on Day 5.
+
+## Day 5 Pending Items
+
+Loading: PENDING — frontend verification required.
+Empty state: PENDING — frontend verification required.
+Sector Node: SKIPPED — no Sector Node found in the current project.
