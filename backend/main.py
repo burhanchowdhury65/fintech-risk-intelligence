@@ -1,5 +1,5 @@
 from typing import Optional
-
+from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import os
 import uuid
@@ -32,6 +32,16 @@ ML_NODE_TIMEOUT = float(
 app = FastAPI(
     title="Fintech Risk Intelligence API",
     version="1.0.0"
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
@@ -177,6 +187,18 @@ async def analyze_transaction_tool(
                 "request_id": request_id
             }
         )
+
+    except httpx.HTTPStatusError as exc:
+        if exc.response.status_code == 422:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error_code": "INVALID_INPUT",
+                    "message": "ML/Risk node rejected the input",
+                    "request_id": request_id
+                }
+            )
+        raise
 
     return {
         "request_id": request_id,
