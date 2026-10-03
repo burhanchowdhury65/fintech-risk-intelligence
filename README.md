@@ -8,7 +8,7 @@ An AI-powered  risk intelligence platform that analyzes financial transactions, 
 
 ## 🚀 Live Demo
 
-👉 [Open Fintech Risk Intelligence](https://dawdler-carpool-sycamore.ngrok-free.dev)
+👉 [Open Fintech Risk Intelligence](https://fintech-risk-intelligence.vercel.app/)
 
 ## 📦 GitHub Repository
 
