@@ -87,6 +87,7 @@ class AnalyzeResponse(BaseModel):
     risk_status: str
     model_factors: list
     model_version: str
+    counterfactual: dict
 
     # Indicates where the result came from.
     # LIVE   = real ML/Risk node response
@@ -168,6 +169,16 @@ def get_cached_demo_response(
         "risk_status": CACHED_DEMO_RESPONSE["risk_status"],
         "model_factors": CACHED_DEMO_RESPONSE["model_factors"],
         "model_version": CACHED_DEMO_RESPONSE["model_version"],
+        "counterfactual": {
+            "found": False,
+            "changed_feature": None,
+            "changed_feature_label": None,
+            "original_value": None,
+            "suggested_value": None,
+            "new_risk_score": None,
+            "new_risk_status": None,
+            "reason": None,
+        },
         "source_mode": "CACHED",
     }
 
@@ -179,11 +190,23 @@ def get_cached_demo_response(
 async def call_ml_node(
     request: AnalyzeRequest
 ):
+    # ARIA may provide time-only input such as "03:15".
+    # The ML node expects transaction_time as a full ISO datetime.
+    transaction_time = request.transaction_time
+
+    if isinstance(transaction_time, str):
+        import re
+
+        if re.fullmatch(r"\\d{2}:\\d{2}", transaction_time):
+            transaction_time = f"2026-01-01T{transaction_time}:00"
+        elif re.fullmatch(r"\\d{2}:\\d{2}:\\d{2}", transaction_time):
+            transaction_time = f"2026-01-01T{transaction_time}"
+
     payload = {
         "transaction_amount": request.transaction_amount,
         "transaction_type": request.transaction_type,
         "merchant_category": request.merchant_category,
-        "transaction_time": request.transaction_time,
+        "transaction_time": transaction_time,
         "distance_from_home": request.distance_from_home,
         "location": request.location,
     }
@@ -409,6 +432,7 @@ async def analyze_transaction_tool(
         "risk_status": result["risk_status"],
         "model_factors": result["model_factors"],
         "model_version": result["model_version"],
+        "counterfactual": result["counterfactual"],
         "source_mode": "LIVE",
     }
 
@@ -487,6 +511,7 @@ async def aria_chat(
         message=request.message,
         language=request.language,
         analyze_tool=aria_analyze_tool,
+        context=request.context,
     )
 
     return AriaChatResponse(

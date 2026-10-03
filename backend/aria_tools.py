@@ -5,6 +5,7 @@ from typing import Any
 def build_aria_decision_prompt(
     message: str,
     language: str,
+    context: dict[str, Any] | None = None,
 ) -> str:
     return f"""
 You are ARIA, a financial risk intelligence assistant.
@@ -19,6 +20,32 @@ User language:
 User message:
 {message}
 
+Current transaction context:
+{json.dumps(context or {}, ensure_ascii=False)}
+
+Use the current transaction context when the user refers to
+an existing transaction or asks a follow-up question about it.
+
+If the user is asking about the CURRENT transaction or asking a follow-up
+question about an existing analysis, use:
+
+{{
+  "action": "explain_current_result"
+}}
+
+Examples:
+- "why is this transaction high risk?"
+- "why was this flagged?"
+- "what caused the high score?"
+- "why is the risk so high?"
+- "what factors affected this result?"
+- "explain this result"
+- "is this transaction risky?"
+- "what would change this result?"
+
+If a current transaction context is available, these questions MUST use
+that existing result. Do NOT request a new transaction analysis.
+
 If the user is NOT asking for transaction risk/fraud analysis,
 return ONLY valid JSON in this exact structure:
 
@@ -27,7 +54,7 @@ return ONLY valid JSON in this exact structure:
   "reply": "your concise answer"
 }}
 
-If the user IS asking for transaction risk/fraud analysis,
+If the user IS providing a NEW transaction to analyze,
 extract ONLY the transaction fields that are explicitly available.
 
 Return ONLY valid JSON in this exact structure:
@@ -49,8 +76,15 @@ Rules:
 - Use null for fields that are not provided.
 - transaction_amount must be a number if provided.
 - distance_from_home must be a number if provided.
-- transaction_time should be an ISO 8601 datetime string if provided.
+- transaction_time should be an ISO 8601 datetime string if a full datetime is provided.
+- If only a time in HH:MM format is provided, preserve it as the transaction_time value.
+- Do not invent a date when only a time is provided.
 - Do not invent risk scores or fraud results.
+- If current transaction context exists and the user refers to "this transaction",
+  "this result", "why is it risky", or similar follow-up wording,
+  choose "explain_current_result".
+- Only choose "analyze_transaction" for a new transaction or explicitly
+  requested new analysis.
 - Return JSON only.
 """
 
@@ -78,6 +112,7 @@ def parse_aria_decision(raw_content: str) -> dict[str, Any]:
     if action not in {
         "chat",
         "analyze_transaction",
+        "explain_current_result",
     }:
         raise ValueError("Invalid ARIA action")
 
@@ -108,6 +143,12 @@ Important rules:
   model_version, or model_factors.
 - Clearly explain the result in simple language.
 - If model_factors are present, explain them.
+- If counterfactual.found is true, explain the hypothetical change,
+  the original value, the suggested value, and the resulting risk score/status.
+- Clearly describe counterfactual information as hypothetical and illustrative.
+- Do not present a counterfactual as a guarantee that changing the feature
+  will prevent fraud or make a real transaction safe.
+- If counterfactual.found is false, do not invent a suggested change.
 - Do not claim that the model is medically, legally, or financially
   certain.
 - Do not expose internal implementation details unnecessarily.

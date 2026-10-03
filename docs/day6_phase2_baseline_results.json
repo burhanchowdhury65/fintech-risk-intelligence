@@ -1,0 +1,78 @@
+{
+  "A_normal": {
+    "is_fraud": false,
+    "risk_score": 0,
+    "score_type": "relative_risk_0_100_not_calibrated_probability",
+    "risk_status": "low",
+    "model_version": "histgb-candidate-day3-v1",
+    "model_factors": [],
+    "counterfactual": {
+      "found": false,
+      "changed_feature": null,
+      "changed_feature_label": null,
+      "original_value": null,
+      "suggested_value": null,
+      "new_risk_score": null,
+      "new_risk_status": null,
+      "reason": null
+    }
+  },
+  "B_flagged": {
+    "is_fraud": true,
+    "risk_score": 99,
+    "score_type": "relative_risk_0_100_not_calibrated_probability",
+    "risk_status": "high",
+    "model_version": "histgb-candidate-day3-v1",
+    "model_factors": [
+      "Transaction amount is unusually high",
+      "Transaction location is far from customer's home",
+      "Transaction occurred at an unusual hour"
+    ],
+    "counterfactual": {
+      "found": true,
+      "changed_feature": "amt",
+      "changed_feature_label": "transaction amount",
+      "original_value": 890.0,
+      "suggested_value": 623.0,
+      "new_risk_score": 67,
+      "new_risk_status": "medium",
+      "reason": "If the transaction amount had been 623.00 instead of 890.00, the risk score would have been 67 instead of the original score."
+    }
+  },
+  "D_boundary_threshold_amt": {
+    "is_fraud": false,
+    "risk_score": 1,
+    "score_type": "relative_risk_0_100_not_calibrated_probability",
+    "risk_status": "low",
+    "model_version": "histgb-candidate-day3-v1",
+    "model_factors": [],
+    "counterfactual": {
+      "found": false,
+      "changed_feature": null,
+      "changed_feature_label": null,
+      "original_value": null,
+      "suggested_value": null,
+      "new_risk_score": null,
+      "new_risk_status": null,
+      "reason": null
+    }
+  },
+  "E_missing_optional": {
+    "is_fraud": false,
+    "risk_score": 0,
+    "score_type": "relative_risk_0_100_not_calibrated_probability",
+    "risk_status": "low",
+    "model_version": "histgb-candidate-day3-v1",
+    "model_factors": [],
+    "counterfactual": {
+      "found": false,
+      "changed_feature": null,
+      "changed_feature_label": null,
+      "original_value": null,
+      "suggested_value": null,
+      "new_risk_score": null,
+      "new_risk_status": null,
+      "reason": null
+    }
+  }
+}

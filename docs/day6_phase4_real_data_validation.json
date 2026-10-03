@@ -1,0 +1,112 @@
+[
+  {
+    "test_case_id": "day6_real_420",
+    "original_risk_score": 94,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 503.7,
+    "suggested_value": 402.96,
+    "new_risk_score": 58,
+    "new_risk_status": "medium"
+  },
+  {
+    "test_case_id": "day6_real_1185",
+    "original_risk_score": 87,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 17.32,
+    "suggested_value": 13.86,
+    "new_risk_score": 19,
+    "new_risk_status": "low"
+  },
+  {
+    "test_case_id": "day6_real_1210",
+    "original_risk_score": 81,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 9.22,
+    "suggested_value": 8.3,
+    "new_risk_score": 69,
+    "new_risk_status": "medium"
+  },
+  {
+    "test_case_id": "day6_real_1215",
+    "original_risk_score": 90,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 23.31,
+    "suggested_value": 16.32,
+    "new_risk_score": 77,
+    "new_risk_status": "high"
+  },
+  {
+    "test_case_id": "day6_real_1221",
+    "original_risk_score": 100,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 340.63,
+    "suggested_value": 238.44,
+    "new_risk_score": 70,
+    "new_risk_status": "high"
+  },
+  {
+    "test_case_id": "day6_real_1230",
+    "original_risk_score": 100,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 1032.31,
+    "suggested_value": 516.15,
+    "new_risk_score": 62,
+    "new_risk_status": "medium"
+  },
+  {
+    "test_case_id": "day6_real_1253",
+    "original_risk_score": 100,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 1035.66,
+    "suggested_value": 517.83,
+    "new_risk_score": 60,
+    "new_risk_status": "medium"
+  },
+  {
+    "test_case_id": "day6_real_1257",
+    "original_risk_score": 90,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 17.99,
+    "suggested_value": 16.19,
+    "new_risk_score": 51,
+    "new_risk_status": "medium"
+  },
+  {
+    "test_case_id": "day6_real_1261",
+    "original_risk_score": 89,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 19.31,
+    "suggested_value": 15.45,
+    "new_risk_score": 27,
+    "new_risk_status": "low"
+  },
+  {
+    "test_case_id": "day6_real_1287",
+    "original_risk_score": 92,
+    "original_risk_status": "high",
+    "found": true,
+    "feature_searched": "amt",
+    "original_value": 23.32,
+    "suggested_value": 16.32,
+    "new_risk_score": 64,
+    "new_risk_status": "medium"
+  }
+]

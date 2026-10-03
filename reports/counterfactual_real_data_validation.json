@@ -1,0 +1,122 @@
+[
+  {
+    "test_case_id": "real_flagged_728",
+    "original_risk_score": 90,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 724.14,
+    "suggested_value": 579.31,
+    "new_risk_score": 4,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 12.3
+  },
+  {
+    "test_case_id": "real_flagged_1044",
+    "original_risk_score": 95,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 981.92,
+    "suggested_value": 490.96,
+    "new_risk_score": 2,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 18.3
+  },
+  {
+    "test_case_id": "real_flagged_1398",
+    "original_risk_score": 90,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 1420.9,
+    "suggested_value": 426.27,
+    "new_risk_score": 0,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 24.0
+  },
+  {
+    "test_case_id": "real_flagged_1428",
+    "original_risk_score": 95,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 2271.66,
+    "suggested_value": 227.17,
+    "new_risk_score": 0,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 31.4
+  },
+  {
+    "test_case_id": "real_flagged_1586",
+    "original_risk_score": 90,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 707.55,
+    "suggested_value": 636.79,
+    "new_risk_score": 12,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 5.4
+  },
+  {
+    "test_case_id": "real_flagged_1681",
+    "original_risk_score": 92,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 49.43,
+    "suggested_value": 44.49,
+    "new_risk_score": 32,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 5.7
+  },
+  {
+    "test_case_id": "real_flagged_1694",
+    "original_risk_score": 84,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 4.93,
+    "suggested_value": 3.94,
+    "new_risk_score": 74,
+    "new_risk_status": "high",
+    "flipped": true,
+    "search_time_ms": 10.0
+  },
+  {
+    "test_case_id": "real_flagged_1695",
+    "original_risk_score": 99,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 890.22,
+    "suggested_value": 445.11,
+    "new_risk_score": 33,
+    "new_risk_status": "low",
+    "flipped": true,
+    "search_time_ms": 19.9
+  },
+  {
+    "test_case_id": "real_flagged_1708",
+    "original_risk_score": 80,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 18.11,
+    "suggested_value": 16.3,
+    "new_risk_score": 44,
+    "new_risk_status": "medium",
+    "flipped": true,
+    "search_time_ms": 4.9
+  },
+  {
+    "test_case_id": "real_flagged_1767",
+    "original_risk_score": 100,
+    "original_risk_status": "high",
+    "feature_searched": "amt",
+    "original_value": 780.52,
+    "suggested_value": 390.26,
+    "new_risk_score": 53,
+    "new_risk_status": "medium",
+    "flipped": true,
+    "search_time_ms": 21.7
+  }
+]

@@ -11,10 +11,49 @@ from backend.aria_tools import (
 )
 
 
+def _normalize_transaction_time(arguments: dict[str, Any]) -> dict[str, Any]:
+    """
+    Normalize a time-only transaction_time such as '03:15'
+    into an ISO datetime string accepted by the ML node.
+
+    Full ISO datetime values are left unchanged.
+    """
+    normalized = dict(arguments)
+
+    value = normalized.get("transaction_time")
+
+    if isinstance(value, str):
+        value = value.strip()
+
+        # Only normalize HH:MM or HH:MM:SS.
+        if len(value) in (5, 8):
+            parts = value.split(":")
+
+            if (
+                len(parts) in (2, 3)
+                and all(part.isdigit() for part in parts)
+            ):
+                hour = int(parts[0])
+                minute = int(parts[1])
+                second = int(parts[2]) if len(parts) == 3 else 0
+
+                if (
+                    0 <= hour <= 23
+                    and 0 <= minute <= 59
+                    and 0 <= second <= 59
+                ):
+                    normalized["transaction_time"] = (
+                        f"2026-01-01T{hour:02d}:{minute:02d}:{second:02d}"
+                    )
+
+    return normalized
+
+
 class AriaChatRequest(BaseModel):
     message: str = Field(..., min_length=1)
     language: str = Field(default="English")
     session_id: Optional[str] = None
+    context: Optional[dict[str, Any]] = None
 
 
 class AriaChatResponse(BaseModel):
@@ -27,6 +66,7 @@ class AriaChatResponse(BaseModel):
 def generate_aria_decision(
     message: str,
     language: str,
+    context: Optional[dict[str, Any]] = None,
 ) -> tuple[dict[str, Any], str]:
     """
     Ask the LLM to decide whether the user wants normal chat
@@ -36,6 +76,7 @@ def generate_aria_decision(
     prompt = build_aria_decision_prompt(
         message,
         language,
+        context,
     )
 
     result, provider = call_llm_with_fallback(prompt)
@@ -50,11 +91,13 @@ def generate_aria_decision(
 def generate_aria_reply(
     message: str,
     language: str,
+    context: Optional[dict[str, Any]] = None,
 ) -> tuple[str, str]:
 
     decision, provider = generate_aria_decision(
         message,
         language,
+        context,
     )
 
     if decision["action"] == "chat":
@@ -92,6 +135,7 @@ async def handle_aria_message(
     message: str,
     language: str,
     analyze_tool: Callable[..., Awaitable[dict[str, Any]]],
+    context: Optional[dict[str, Any]] = None,
 ) -> tuple[str, str, Optional[dict[str, Any]]]:
     """
     Main ARIA orchestration layer.
@@ -106,13 +150,43 @@ async def handle_aria_message(
     decision, provider = generate_aria_decision(
         message,
         language,
+        context,
     )
 
+    if decision["action"] == "explain_current_result":
+        existing_result = None
+
+        if isinstance(context, dict):
+            existing_result = context.get("result")
+
+        if not isinstance(existing_result, dict):
+            return (
+                "There is no current transaction result to explain. Please analyze a transaction first.",
+                provider,
+                None,
+            )
+
+        reply, analysis_provider = generate_aria_analysis_reply(
+            message,
+            existing_result,
+            language,
+        )
+
+        return (
+            reply,
+            analysis_provider,
+            existing_result,
+        )
+
     if decision["action"] == "chat":
+        existing_result = None
+        if isinstance(context, dict):
+            existing_result = context.get("result")
+
         return (
             decision["reply"],
             provider,
-            None,
+            existing_result,
         )
 
     arguments = decision.get("arguments", {})
@@ -121,6 +195,8 @@ async def handle_aria_message(
         raise ValueError(
             "ARIA analysis arguments must be an object"
         )
+
+    arguments = _normalize_transaction_time(arguments)
 
     analysis_result = await analyze_tool(
         **arguments

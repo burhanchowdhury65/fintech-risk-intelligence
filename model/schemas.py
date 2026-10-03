@@ -15,7 +15,7 @@ Everything marked PROVISIONAL below is still pending final confirmation from Per
 and Person C — see docs/DAY4_DECISIONS.md and docs/DAY4_DATA_CONTRACT.md.
 """
 
-from typing import Optional, Any
+from typing import Optional, Any, Union
 from datetime import datetime
 from uuid import uuid4
 from pydantic import BaseModel, Field, field_validator
@@ -94,12 +94,40 @@ class TransactionRequest(BaseModel):
         return v if v else f"auto_{uuid4().hex[:12]}"
 
 
+class Counterfactual(BaseModel):
+    """
+    "What would fix this?" — Day 5+ optional add-on (see Counterfactual_Feature_Roadmap).
+    Describes a HYPOTHETICAL single-feature change that would have flipped is_fraud to
+    False, using the same trained pipeline and the same classify() decision logic as the
+    real prediction. This is NOT a real transaction modification and NOT a guarantee that
+    any similar transaction would be safe — see docs for full limitations once written.
+
+    found=False case: every other field is null, by design (not an error state) — either
+    the original transaction wasn't flagged, or no candidate within the bounded search
+    range flipped the result. The two causes are not distinguished in this schema; both
+    present identically as found=False.
+    """
+    found: bool = Field(..., description="Whether a single-feature change was found that flips is_fraud to False")
+    changed_feature: Optional[str] = Field(None, description="Internal model feature name changed (e.g. 'amt', 'trans_hour', 'distance_from_home_km'), null if not found")
+    changed_feature_label: Optional[str] = Field(None, description="Human-readable label for changed_feature, null if not found")
+    original_value: Optional[Union[float, int]] = Field(None, description="The transaction's actual value for changed_feature, null if not found")
+    suggested_value: Optional[Union[float, int]] = Field(None, description="The hypothetical candidate value that flipped the result, null if not found")
+    new_risk_score: Optional[int] = Field(None, ge=0, le=100, description="Risk score the candidate would have produced, null if not found")
+    new_risk_status: Optional[str] = Field(None, description="Risk status the candidate would have produced, null if not found")
+    reason: Optional[str] = Field(None, description="Plain-language explanation of the hypothetical change, null if not found")
+
+
 class PredictionResponse(BaseModel):
     """
     Public response schema, per Day 4's team decision:
     is_fraud / risk_score / risk_status / model_factors / model_version.
     Internally, predict.py still computes 'predicted_class' and 'risk_category' —
     this schema is where that gets mapped to the agreed public names.
+
+    counterfactual: added as part of the optional "What Would Fix This?" add-on. This is
+    a REQUIRED field on every response (always present, found=False when not applicable),
+    not Optional — see docs for the integration note to Person A/C about this being a new
+    required field for any existing stored/cached fixtures.
     """
     request_id: str
     transaction_id: str
@@ -111,6 +139,7 @@ class PredictionResponse(BaseModel):
     risk_status: str = Field(..., description="'low' / 'medium' / 'high' — PENDING CONFIRMATION: cutoffs are provisional, not team-approved (see docs/RISK_SCORE.md)")
     model_factors: list[str] = Field(default_factory=list, description="PROVISIONAL: simple rule-based explanation hints, NOT a formal SHAP/feature-importance explanation — see docs/DAY4_PERSON_A_HANDOFF.md")
     model_version: str
+    counterfactual: Counterfactual = Field(..., description="Optional add-on: a hypothetical single-feature change that would have avoided the flag. found=False when not flagged or no candidate found.")
 
 
 class ErrorResponse(BaseModel):

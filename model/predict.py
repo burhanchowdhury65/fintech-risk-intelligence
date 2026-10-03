@@ -22,6 +22,7 @@ from pathlib import Path
 
 from config import ARTIFACTS_DIR, NUMERIC_FEATURES, CATEGORICAL_FEATURES
 from risk_engine import classify, build_model_factors, DECISION_THRESHOLD
+from counterfactual import build_counterfactual
 
 # Day 3 update: serving the HistGradientBoosting candidate (better F1/precision than
 # Day 2's Random Forest at a similar recall level — see reports/day3_final_test_evaluation.json).
@@ -92,6 +93,18 @@ def predict_one(request_dict: dict) -> dict:
     is_fraud, risk_score_0_100, risk_status = classify(raw_score)
     model_factors = build_model_factors(features, is_fraud)
 
+    # Additive, optional feature — per Phase 3 rule #6, a counterfactual-search failure
+    # must never crash an otherwise-valid prediction. The original prediction above is
+    # already fully computed at this point and is never touched by anything below.
+    try:
+        counterfactual = build_counterfactual(pipeline, features, is_fraud)
+    except Exception:
+        counterfactual = {
+            "found": False, "changed_feature": None, "changed_feature_label": None,
+            "original_value": None, "suggested_value": None,
+            "new_risk_score": None, "new_risk_status": None, "reason": None,
+        }
+
     return {
         "is_fraud": is_fraud,
         "risk_score": risk_score_0_100,
@@ -99,4 +112,5 @@ def predict_one(request_dict: dict) -> dict:
         "risk_status": risk_status,
         "model_version": MODEL_VERSION,
         "model_factors": model_factors,
+        "counterfactual": counterfactual,
     }

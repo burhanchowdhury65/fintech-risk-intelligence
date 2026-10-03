@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* Design tokens. Semantic names only; components never use raw hex. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-sunken: #eef1f5;
+  --border: #d9dfe7;
+  --border-strong: #7c8a9a; /* form control edges, 3:1 on white */
+  --text: #14202e;
+  --muted: #566577;
+  --primary: #0b6b6f;
+  --primary-hover: #095659;
+  --primary-soft: #e0f0f0;
+  --success: #17683d;
+  --success-soft: #e3f3e9;
+  --warning: #8a5300;
+  --warning-soft: #fbf0d9;
+  --danger: #a3242a;
+  --danger-soft: #fbe6e6;
+  --info: #24548f;
+  --info-soft: #e5eefa;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgb(20 32 46 / 0.06);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
