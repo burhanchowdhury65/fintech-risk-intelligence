@@ -1,0 +1,425 @@
+{
+  "model_version": "histgb-candidate-day3-v1",
+  "generated": "2026-10-03",
+  "note": "Expected values captured from the real model via predict_one(); NOT hardcoded. Verify against a live node with verify_demo_cases.py.",
+  "cases": [
+    {
+      "id": "D1",
+      "title": "Normal: small grocery purchase (DEMO: normal)",
+      "tag": "demo",
+      "request": {
+        "transaction_amount": 45.0,
+        "merchant_category": "grocery_pos",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 0,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D2",
+      "title": "Flagged: large online shopping at night, far from home (DEMO: flagged, counterfactual found)",
+      "tag": "demo",
+      "request": {
+        "transaction_amount": 890.0,
+        "merchant_category": "shopping_net",
+        "transaction_time": "2026-10-03T03:15:00",
+        "distance_from_home": 240.0
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": true,
+        "risk_score": 99,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "high",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [
+          "Transaction amount is unusually high",
+          "Transaction location is far from customer's home",
+          "Transaction occurred at an unusual hour"
+        ],
+        "counterfactual": {
+          "found": true,
+          "changed_feature": "amt",
+          "changed_feature_label": "transaction amount",
+          "original_value": 890.0,
+          "suggested_value": 623.0,
+          "new_risk_score": 67,
+          "new_risk_status": "medium",
+          "reason": "If the transaction amount had been 623.00 instead of 890.00, the risk score would have been 67 instead of the original score."
+        }
+      }
+    },
+    {
+      "id": "D3",
+      "title": "Normal: mid-size purchase, optional fields omitted",
+      "tag": "demo",
+      "request": {
+        "transaction_amount": 128.5,
+        "merchant_category": "grocery_pos",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 0,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D4",
+      "title": "Flagged: misc_net, night, no distance given",
+      "tag": "demo",
+      "request": {
+        "transaction_amount": 1038.72,
+        "merchant_category": "personal_care",
+        "transaction_time": "2026-10-03T03:22:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": true,
+        "risk_score": 98,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "high",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [
+          "Transaction amount is unusually high",
+          "Transaction occurred at an unusual hour"
+        ],
+        "counterfactual": {
+          "found": true,
+          "changed_feature": "amt",
+          "changed_feature_label": "transaction amount",
+          "original_value": 1038.72,
+          "suggested_value": 519.36,
+          "new_risk_score": 80,
+          "new_risk_status": "high",
+          "reason": "If the transaction amount had been 519.36 instead of 1038.72, the risk score would have been 80 instead of the original score."
+        }
+      }
+    },
+    {
+      "id": "D5",
+      "title": "Missing optional fields, gas purchase",
+      "tag": "demo",
+      "request": {
+        "transaction_amount": 60.0,
+        "merchant_category": "gas_transport",
+        "transaction_time": "2026-10-03T10:00:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 0,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D6",
+      "title": "Null merchant_category (imputed by trained pipeline)",
+      "tag": "edge",
+      "request": {
+        "transaction_amount": 75.0,
+        "merchant_category": null,
+        "transaction_time": "2026-10-03T12:00:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 0,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D7",
+      "title": "Unknown merchant_category value (ignored by OneHotEncoder)",
+      "tag": "edge",
+      "request": {
+        "transaction_amount": 75.0,
+        "merchant_category": "banana",
+        "transaction_time": "2026-10-03T12:00:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 0,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D8",
+      "title": "Boundary: amount just above the >500 factor rule, not flagged",
+      "tag": "edge",
+      "request": {
+        "transaction_amount": 500.01,
+        "merchant_category": "shopping_net",
+        "transaction_time": "2026-10-03T12:00:00"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 1,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D9",
+      "title": "Boundary: 23:59:59 vs hour rule",
+      "tag": "edge",
+      "request": {
+        "transaction_amount": 500.01,
+        "merchant_category": "shopping_net",
+        "transaction_time": "2026-10-03T23:59:59"
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 22,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "low",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "D10",
+      "title": "Extreme: very large amount + far + night (counterfactual falls to time-of-day; status stays high)",
+      "tag": "edge-DO-NOT-DEMO",
+      "request": {
+        "transaction_amount": 999999.0,
+        "merchant_category": "misc_net",
+        "transaction_time": "2026-10-03T02:00:00",
+        "distance_from_home": 9999.0
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": true,
+        "risk_score": 99,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "high",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [
+          "Transaction amount is unusually high",
+          "Transaction location is far from customer's home",
+          "Transaction occurred at an unusual hour"
+        ],
+        "counterfactual": {
+          "found": true,
+          "changed_feature": "trans_hour",
+          "changed_feature_label": "time of day",
+          "original_value": 2,
+          "suggested_value": 5,
+          "new_risk_score": 77,
+          "new_risk_status": "high",
+          "reason": "If the transaction had occurred at hour 5 instead of 2, the risk score would have been 77 instead of the original score."
+        }
+      }
+    },
+    {
+      "id": "D11",
+      "title": "KNOWN EDGE: displayed score 80 but is_fraud=false (raw 0.7956 < 0.80 threshold)",
+      "tag": "edge-DO-NOT-DEMO",
+      "request": {
+        "transaction_amount": 632.87,
+        "merchant_category": "health_fitness",
+        "transaction_time": "2026-10-03T01:41:00",
+        "distance_from_home": 53.8
+      },
+      "expected_http_status": 200,
+      "expected_response": {
+        "status": "ok",
+        "is_fraud": false,
+        "risk_score": 80,
+        "score_type": "relative_risk_0_100_not_calibrated_probability",
+        "risk_status": "high",
+        "model_version": "histgb-candidate-day3-v1",
+        "model_factors": [],
+        "counterfactual": {
+          "found": false,
+          "changed_feature": null,
+          "changed_feature_label": null,
+          "original_value": null,
+          "suggested_value": null,
+          "new_risk_score": null,
+          "new_risk_status": null,
+          "reason": null
+        }
+      }
+    },
+    {
+      "id": "E1",
+      "title": "Invalid: negative amount",
+      "tag": "error",
+      "request": {
+        "transaction_amount": -50,
+        "merchant_category": "grocery_pos",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 422,
+      "expected_error_loc": [
+        "body",
+        "transaction_amount"
+      ]
+    },
+    {
+      "id": "E2",
+      "title": "Invalid: zero amount",
+      "tag": "error",
+      "request": {
+        "transaction_amount": 0,
+        "merchant_category": "grocery_pos",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 422,
+      "expected_error_loc": [
+        "body",
+        "transaction_amount"
+      ]
+    },
+    {
+      "id": "E3",
+      "title": "Invalid: missing transaction_time",
+      "tag": "error",
+      "request": {
+        "transaction_amount": 5,
+        "merchant_category": "grocery_pos"
+      },
+      "expected_http_status": 422,
+      "expected_error_loc": [
+        "body",
+        "transaction_time"
+      ]
+    },
+    {
+      "id": "E4",
+      "title": "Invalid: non-numeric amount",
+      "tag": "error",
+      "request": {
+        "transaction_amount": "abc",
+        "merchant_category": "grocery_pos",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 422,
+      "expected_error_loc": [
+        "body",
+        "transaction_amount"
+      ]
+    },
+    {
+      "id": "E5",
+      "title": "Invalid: empty-string category",
+      "tag": "error",
+      "request": {
+        "transaction_amount": 5,
+        "merchant_category": "  ",
+        "transaction_time": "2026-10-03T14:30:00"
+      },
+      "expected_http_status": 422,
+      "expected_error_loc": [
+        "body",
+        "merchant_category"
+      ]
+    }
+  ]
+}

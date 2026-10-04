@@ -17,12 +17,17 @@ NODE_PORT = int(os.environ.get("FRAUD_NODE_PORT", "8001"))
 
 # ---- Paths ----
 # Adjust DATA_DIR to wherever fraudTrain.csv / fraudTest.csv actually live on your machine.
-DATA_DIR = Path(__file__).resolve().parent / "data"
+DATA_DIR = Path("data")
 TRAIN_CSV = DATA_DIR / "fraudTrain.csv"
 TEST_CSV = DATA_DIR / "fraudTest.csv"
 
-ARTIFACTS_DIR = Path(__file__).resolve().parent / "artifacts"
-REPORTS_DIR = Path(__file__).resolve().parent / "reports"
+# DAY 7 P0 FIX: anchor to this file's folder instead of the process's current working
+# directory. Previously Path("artifacts") only resolved if the node was started from inside
+# model/, otherwise /predict returned 503 MODEL_UNAVAILABLE while /health still said "ok".
+# Reproduced and verified both before and after this fix (see reports/DAY7_*).
+BASE_DIR = Path(__file__).resolve().parent
+ARTIFACTS_DIR = BASE_DIR / "artifacts"
+REPORTS_DIR = Path("reports")
 
 MODEL_PATH = ARTIFACTS_DIR / "fraud_model_pipeline.joblib"
 

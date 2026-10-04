@@ -1,8 +1,37 @@
 # model/ — Fraud/Risk Detection Pipeline (Day 2, Person B)
 
-Everything in this folder has been **actually run** against the real Kaggle dataset
+Everything in this folder has been **actually run** against the dataset downloaded from Kaggle
 (`fraudTrain.csv` 1,296,675 rows + `fraudTest.csv` 555,719 rows). No numbers here are
 invented — see `../reports/` for the real, executed output logs.
+
+**Data disclosure:** this dataset ("Credit Card Transactions Fraud Detection Dataset",
+Kaggle, CC0 Public Domain license — verified in `../docs/DATASET_NOTES.md`) is **simulated
+data**, generated with the Sparkov data generation tool, not real bank/cardholder records.
+Model performance numbers in this repo reflect behavior on this simulated data and must not
+be presented or read as real-world fraud-detection performance. (Day 7 review flagged the
+previous wording above — "the real Kaggle dataset" — as ambiguous enough to misread as a
+claim about real transaction data; reworded here to remove that ambiguity.)
+
+## ⚠️ Environment setup — READ FIRST (exact versions required)
+
+The model artifact `artifacts/fraud_model_candidate_day3_histgb.joblib` was saved with
+**scikit-learn 1.8.0** and only loads under that exact version. Under scikit-learn 1.9.x it fails with
+`ModuleNotFoundError: No module named '_loss'` (reproduced and confirmed).
+
+Use a **fresh, separate virtual environment** for the node (do NOT reuse the backend's `.venv`):
+
+```powershell
+cd model
+py -3.13 -m venv .venv-node            # Python 3.12 or 3.13 (wheels exist for both)
+.\.venv-node\Scripts\Activate.ps1
+python -m pip install -r requirements.txt     # exact pinned runtime versions
+python -c "import sklearn; print(sklearn.__version__)"   # MUST print 1.8.0
+python api.py
+```
+
+`requirements.txt` = runtime only (pinned). `requirements-dev.txt` = adds pytest + imbalanced-learn
+(only needed to run tests / training scripts). Verified environment: Python 3.12.3, scikit-learn 1.8.0,
+numpy 2.4.4, scipy 1.17.1, joblib 1.5.3, pandas 3.0.2.
 
 ## Folder contents
 

@@ -48,6 +48,15 @@ class TransactionRequest(BaseModel):
 
     # --- Required, used by the model ---
     transaction_amount: float = Field(..., gt=0, description="Maps to model feature 'amt'. Required — cannot be null (see class docstring).")
+    # Day 7 note: tried allow_inf_nan=False here to turn a raw-JSON Infinity/NaN amount into a
+    # clean 422 instead of today's structured 500 PREDICTION_ERROR (see N-1 in DAY7_FINAL_REPORT.md).
+    # REVERTED after testing: Pydantic correctly rejects it, but FastAPI's default validation-error
+    # response then tries to JSON-serialize the echoed 'input': inf value, which Starlette's encoder
+    # refuses (ValueError: Out of range float values are not JSON compliant), producing an
+    # UNSTRUCTURED raw 500 with no JSON body at all — worse than the current structured
+    # PREDICTION_ERROR. A real fix needs a custom RequestValidationError handler that sanitizes
+    # non-finite values before serializing, not just a Field constraint — left as a documented,
+    # NOT-done improvement rather than shipped half-working on deployment day.
     merchant_category: Optional[str] = Field(None, description="Maps to model feature 'category'. Node handles encoding internally. Null is accepted — the trained imputer fills it with the most-frequent training category.")
     transaction_time: datetime = Field(..., description="ISO 8601 datetime; node derives 'trans_hour' (0-23) from this internally")
 
