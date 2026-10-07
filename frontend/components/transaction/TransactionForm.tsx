@@ -112,7 +112,15 @@ export function TransactionForm({ values, errors, activeDemo, loading, onChange,
         </div>
       </div>
       <Field name="transaction_time" value={values.transaction_time} error={errors.transaction_time} type="datetime-local" {...shared} />
-      <Field name="distance_from_home" label="Distance from home (optional)" hint="Leave empty if unknown." value={values.distance_from_home} error={errors.distance_from_home} type="number" step="any" inputMode="decimal" placeholder="3.2" {...shared} />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field name="customer_latitude" label="Customer latitude" hint="Example: 23.8103" value={values.customer_latitude} error={errors.customer_latitude} type="number" step="any" inputMode="decimal" placeholder="23.8103" {...shared} />
+        <Field name="customer_longitude" label="Customer longitude" hint="Example: 90.4125" value={values.customer_longitude} error={errors.customer_longitude} type="number" step="any" inputMode="decimal" placeholder="90.4125" {...shared} />
+        <Field name="merchant_latitude" label="Merchant latitude" hint="Example: 22.3569" value={values.merchant_latitude} error={errors.merchant_latitude} type="number" step="any" inputMode="decimal" placeholder="22.3569" {...shared} />
+        <Field name="merchant_longitude" label="Merchant longitude" hint="Example: 91.7832" value={values.merchant_longitude} error={errors.merchant_longitude} type="number" step="any" inputMode="decimal" placeholder="91.7832" {...shared} />
+      </div>
+
+      <Field name="distance_from_home" label="Distance from home (km)" hint="Optional fallback. If coordinates are provided, distance is calculated automatically." value={values.distance_from_home} error={errors.distance_from_home} type="number" step="any" inputMode="decimal" placeholder="3.2" {...shared} />
 
       <Button type="submit" disabled={loading} aria-busy={loading}>
         {loading && <span aria-hidden="true" className="mr-2 size-4 animate-spin rounded-full border-2 border-line-strong border-t-primary motion-reduce:animate-none" />}

@@ -37,6 +37,22 @@ async function analyzeFromChat(message: string): Promise<AriaReply | null> {
     transaction_amount: String(request.transaction_amount), transaction_time: request.transaction_time.slice(0, 16),
     transaction_type: request.transaction_type, merchant_category: request.merchant_category,
     distance_from_home: request.distance_from_home == null ? "" : String(request.distance_from_home),
+    customer_latitude:
+      typeof request.location === "object" && request.location !== null && "customer_lat" in request.location
+        ? String(request.location.customer_lat)
+        : "",
+    customer_longitude:
+      typeof request.location === "object" && request.location !== null && "customer_long" in request.location
+        ? String(request.location.customer_long)
+        : "",
+    merchant_latitude:
+      typeof request.location === "object" && request.location !== null && "merchant_lat" in request.location
+        ? String(request.location.merchant_lat)
+        : "",
+    merchant_longitude:
+      typeof request.location === "object" && request.location !== null && "merchant_long" in request.location
+        ? String(request.location.merchant_long)
+        : "",
   };
   const problems = Object.entries(validate(form)).map(([k, v]) => `${FIELD_LABELS[k as keyof typeof FIELD_LABELS]}: ${v}`);
   if (problems.length) return { text: `I couldn't use those details, so nothing was analyzed.\n${problems.join("\n")}` };

@@ -27,7 +27,7 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     id: "normal",
     label: "Demo: Normal Transaction",
     hint: "Small grocery purchase",
-    input: { transaction_amount: 45, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-28T14:30:00", distance_from_home: null, location: null },
+    input: { transaction_amount: 45, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-28T14:30:00", distance_from_home: null, location: { customer_lat: 23.8103, customer_long: 90.4125, merchant_lat: 23.8125, merchant_long: 90.4150 } },
     outcome: {
       kind: "response",
       response: { request_id: "MOCK-REQ-001", is_fraud: false, risk_score: 0, risk_status: "low", model_factors: [], model_version: MOCK_MODEL_VERSION },
@@ -37,7 +37,7 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     id: "flagged",
     label: "Demo: Flagged Transaction",
     hint: "Large, far away, late at night",
-    input: { transaction_amount: 890, transaction_type: "purchase", merchant_category: "shopping_net", transaction_time: "2026-09-28T03:15:00", distance_from_home: 240, location: null },
+    input: { transaction_amount: 890, transaction_type: "purchase", merchant_category: "shopping_net", transaction_time: "2026-09-28T03:15:00", distance_from_home: 240, location: { customer_lat: 23.8103, customer_long: 90.4125, merchant_lat: 21.4272, merchant_long: 92.0058 } },
     outcome: {
       kind: "response",
       response: {
@@ -52,7 +52,7 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     id: "cached",
     label: "Demo: Cached Demo",
     hint: "Saved result for one fixed input",
-    input: { transaction_amount: 128.5, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-28T14:30:00", distance_from_home: 3.2, location: null },
+    input: { transaction_amount: 128.5, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-28T14:30:00", distance_from_home: 3.2, location: { customer_lat: 23.8103, customer_long: 90.4125, merchant_lat: 23.8390, merchant_long: 90.3980 } },
     outcome: {
       kind: "response",
       response: { request_id: "MOCK-REQ-003", is_fraud: false, risk_score: 0, risk_status: "low", model_factors: [], model_version: MOCK_MODEL_VERSION, source_mode: "CACHED" },
@@ -63,13 +63,13 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     mockOnly: true,
     label: "Demo: Service Error",
     hint: "Risk service is down",
-    input: { transaction_amount: 75, transaction_type: "purchase", merchant_category: "gas_transport", transaction_time: "2026-09-26T10:05:00", distance_from_home: 8, location: null },
+    input: { transaction_amount: 75, transaction_type: "purchase", merchant_category: "gas_transport", transaction_time: "2026-09-26T10:05:00", distance_from_home: 8, location: { customer_lat: 23.8103, customer_long: 90.4125, merchant_lat: 23.8750, merchant_long: 90.4050 } },
     outcome: { kind: "error", code: "ML_NODE_UNAVAILABLE", message: "ML/Risk node is currently unavailable", requestId: "MOCK-REQ-004" },
   },
   {
     id: "invalid",
     label: "Demo: Invalid Input",
     hint: "Negative amount",
-    input: { transaction_amount: -50, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-26T14:30:00", distance_from_home: 3.2, location: null },
+    input: { transaction_amount: -50, transaction_type: "purchase", merchant_category: "grocery_pos", transaction_time: "2026-09-26T14:30:00", distance_from_home: 3.2, location: { customer_lat: 23.8103, customer_long: 90.4125, merchant_lat: 23.8390, merchant_long: 90.3980 } },
   },
 ];

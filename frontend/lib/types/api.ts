@@ -90,7 +90,11 @@ export type FieldName =
   | "transaction_time"
   | "transaction_type"
   | "merchant_category"
-  | "distance_from_home";
+  | "distance_from_home"
+  | "customer_latitude"
+  | "customer_longitude"
+  | "merchant_latitude"
+  | "merchant_longitude";
 
 export type FieldErrors = Partial<Record<FieldName, string>>;
 

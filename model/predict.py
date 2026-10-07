@@ -18,6 +18,7 @@ Field mapping (raw API name -> trained model feature), per docs/DAY4_DATA_CONTRA
 
 import joblib
 import pandas as pd
+import numpy as np
 from pathlib import Path
 
 from config import ARTIFACTS_DIR, NUMERIC_FEATURES, CATEGORICAL_FEATURES
@@ -59,19 +60,42 @@ def _map_raw_request_to_features(request_dict: dict) -> dict:
         transaction_time = pd.to_datetime(transaction_time)
     trans_hour = transaction_time.hour
 
+    location = request_dict.get("location")
+    calculated_distance = None
+
+    if isinstance(location, dict):
+        try:
+            R = 6371.0
+            lat1 = np.radians(float(location["customer_lat"]))
+            lon1 = np.radians(float(location["customer_long"]))
+            lat2 = np.radians(float(location["merchant_lat"]))
+            lon2 = np.radians(float(location["merchant_long"]))
+
+            dlat = lat2 - lat1
+            dlon = lon2 - lon1
+
+            a = (
+                np.sin(dlat / 2) ** 2
+                + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
+            )
+            calculated_distance = float(
+                R * 2 * np.arcsin(np.sqrt(a))
+            )
+        except (KeyError, TypeError, ValueError):
+            calculated_distance = None
+
     return {
         "amt": request_dict["transaction_amount"],
         "category": request_dict["merchant_category"],
         "trans_hour": trans_hour,
-        # distance_from_home is accepted as-is and assumed to already be in km,
-        # matching how the model was trained (see docs/DAY4_DATA_CONTRACT.md, PENDING
-        # confirmation of unit/source). The node does NOT compute this from `location`.
-        "distance_from_home_km": request_dict.get("distance_from_home"),
+        "distance_from_home_km": (
+            calculated_distance
+            if calculated_distance is not None
+            else request_dict.get("distance_from_home")
+        ),
         "age_years": request_dict.get("age_years"),
         "city_pop": request_dict.get("city_pop"),
         "gender": request_dict.get("gender"),
-        # transaction_type and location are intentionally NOT included here — no trained
-        # model feature exists for them yet. See docs/DAY4_DATA_CONTRACT.md.
     }
 
 
